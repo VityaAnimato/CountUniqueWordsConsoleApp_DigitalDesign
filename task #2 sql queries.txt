@@ -10,6 +10,18 @@ WHERE salary = (SELECT MAX(salary) FROM Employee)
 2. Вывести одно число: максимальную длину цепочки руководителей по таблице
 сотрудников (вычислить глубину дерева).
 
+WITH RECURSIVE cte AS (
+   SELECT 1 AS lvl, chief_id, id
+   FROM Employee
+   WHERE chief_id IS NULL
+   UNION ALL
+   SELECT lvl + 1, Employee.chief_id, Employee.id
+   FROM Employee
+   JOIN cte
+     ON Employee.chief_id = cte.id
+)
+SELECT MAX(lvl) AS max_depth_of_tree
+FROM cte;
 
 3. Отдел, с максимальной суммарной зарплатой сотрудников.
 
@@ -29,14 +41,12 @@ WHERE total_salary =
 
 4. Сотрудника, чье имя начинается на «Р» и заканчивается на «н»
 
+SELECT *
+FROM Employee
+WHERE name LIKE 'Р%н'
 
 
-
-
-
-
-
-******************
+P.S. db schema for testing
 
 create table Department
 (
@@ -54,7 +64,7 @@ create table Employee
 (
     id         bigint primary key,
     department_id    bigint  not null,
-    chief_id    bigint not null,
+    chief_id    bigint,
     name varchar not null,
     salary    bigint not null,
     constraint fk_department_user_id foreign key (department_id) references Department (id),
@@ -62,13 +72,11 @@ create table Employee
 );
 
 insert into Employee
-values (1, 1, 1, 'Boris', 10000),
+values (1, 1, null, 'Boris', 10000),
        (2, 1, 1, 'Egor', 999),
-       (3, 2, 2, 'Sesh', 232323),
-       (4, 2, 2, 'Роман', 3000),
-       (5, 7, 7, 'Рамен', 10000),
-       (6, 7, 7, 'Jee', 12222),
+       (3, 2, null, 'Sesh', 232323),
+       (4, 2, 3, 'Роман', 3000),
+       (5, 7, null, 'Рамен', 10000),
+       (6, 7, 5, 'Jee', 12222),
        (7, 11, 7, 'Dee', 33333);
-
-
 
