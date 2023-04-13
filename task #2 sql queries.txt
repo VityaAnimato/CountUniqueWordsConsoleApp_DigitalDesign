@@ -38,13 +38,13 @@ WHERE total_salary =
 
 ******************
 
-create table Departament
+create table Department
 (
     id   bigint primary key,
     name varchar not null
 );
 
-insert into Departament
+insert into Department
 values (1, 'Logistics'),
        (2, 'Factory'),
        (7, 'IT'),
@@ -53,21 +53,22 @@ values (1, 'Logistics'),
 create table Employee
 (
     id         bigint primary key,
-    departament_id    bigint  not null,
+    department_id    bigint  not null,
     chief_id    bigint not null,
     name varchar not null,
     salary    bigint not null,
-    constraint fk_departament_user_id foreign key (departament_id) references Departament (id)
+    constraint fk_department_user_id foreign key (department_id) references Department (id),
+    constraint fk_employee_chief_id foreign key (chief_id) references Employee (id)
 );
 
 insert into Employee
 values (1, 1, 1, 'Boris', 10000),
        (2, 1, 1, 'Egor', 999),
        (3, 2, 2, 'Sesh', 232323),
-       (4, 2, 2, 'Hers', 3000),
-       (5, 7, 7, 'Yee', 10000),
+       (4, 2, 2, 'Роман', 3000),
+       (5, 7, 7, 'Рамен', 10000),
        (6, 7, 7, 'Jee', 12222),
-       (7, 11, 11, 'Dee', 33333);
+       (7, 11, 7, 'Dee', 33333);
 
 
 
