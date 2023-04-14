@@ -1,18 +1,17 @@
-﻿using Microsoft.VisualBasic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace CountUniqueWordsConsoleApp_DigitalDesign
 {
 
     internal class Program
-    {
-        static string pathInput = @"VoinaIMir";
-
-        static string pathOutput = @"C:\Users\vv.ivanov\source\repos\CountUniqueWordsConsoleApp_DigitalDesign\CountUniqueWordsConsoleApp_DigitalDesign\Result.txt";
-        static Char[] separators = new Char[] { ' ', '\r', '\n', '\t', ',', '.', ';', '!', '?', '–' };
-
+    {               
         static void Main(string[] args)
-        {
+        {         
+            Console.WriteLine("Загрузите свой текстовый файл в папку MyDocuments и введите имя файла, например => VoinaIMir.txt");
+            string nameInputFile = Console.ReadLine();
+            string pathInput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameInputFile);
+            string pathOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Result.txt");
+
             string contents;
             using (StreamReader reader = new StreamReader(pathInput))
             {
@@ -30,10 +29,14 @@ namespace CountUniqueWordsConsoleApp_DigitalDesign
                     writer.WriteLine($"{item.Key} : {item.Value}");
                 }
             }
+
+            Console.WriteLine("Результат в файле Result.txt");
         }
 
         static Dictionary<string, int> GetUniqueWordsAndThisCount(string inputString)
         {
+            Char[] separators = new Char[] { ' ', '\r', '\n', '\t', ',', '.', ';', '!', '?', '–' };
+
             List<string> allWords = new List<string>();
             Dictionary<string, int> uniqueWordsAndThisCount = new Dictionary<string, int>();
 
