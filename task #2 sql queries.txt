@@ -1,0 +1,82 @@
+Напишите запросы, которые выведут:
+
+
+1. Сотрудника с максимальной заработной платой.
+
+SELECT *
+FROM Employee
+WHERE salary = (SELECT MAX(salary) FROM Employee)
+
+2. Вывести одно число: максимальную длину цепочки руководителей по таблице
+сотрудников (вычислить глубину дерева).
+
+WITH RECURSIVE cte AS (
+   SELECT 1 AS lvl, chief_id, id
+   FROM Employee
+   WHERE chief_id IS NULL
+   UNION ALL
+   SELECT lvl + 1, Employee.chief_id, Employee.id
+   FROM Employee
+   JOIN cte
+     ON Employee.chief_id = cte.id
+)
+SELECT MAX(lvl) AS max_depth_of_tree
+FROM cte;
+
+3. Отдел, с максимальной суммарной зарплатой сотрудников.
+
+SELECT department_name
+FROM 	(SELECT Department.name AS department_name, SUM(Employee.salary) AS total_salary
+	FROM Department
+	LEFT JOIN Employee ON Department.id = Employee.department_id
+	GROUP BY Department.name
+	) AS salaries
+WHERE total_salary = 
+	(SELECT MAX(total_salary) FROM (
+	SELECT Department.name AS department_name, SUM(Employee.salary) AS total_salary
+	FROM Department
+	LEFT JOIN Employee ON Department.id = Employee.department_id
+	GROUP BY Department.name
+	) AS salaries)
+
+4. Сотрудника, чье имя начинается на «Р» и заканчивается на «н»
+
+SELECT *
+FROM Employee
+WHERE name LIKE 'Р%н'
+
+
+P.S. db schema for testing
+
+create table Department
+(
+    id   bigint primary key,
+    name varchar not null
+);
+
+insert into Department
+values (1, 'Logistics'),
+       (2, 'Factory'),
+       (7, 'IT'),
+       (11, 'R&D');
+
+create table Employee
+(
+    id         bigint primary key,
+    department_id    bigint  not null,
+    chief_id    bigint,
+    name varchar not null,
+    salary    bigint not null,
+    constraint fk_department_user_id foreign key (department_id) references Department (id),
+    constraint fk_employee_chief_id foreign key (chief_id) references Employee (id)
+);
+
+insert into Employee
+values (1, 1, null, 'Boris', 10000),
+       (2, 1, 1, 'Egor', 999),
+       (3, 2, null, 'Sesh', 232323),
+       (4, 2, 3, 'Роман', 3000),
+       (5, 7, null, 'Рамен', 10000),
+       (6, 7, 5, 'Jee', 12222),
+       (7, 11, 7, 'Dee', 33333);
+
