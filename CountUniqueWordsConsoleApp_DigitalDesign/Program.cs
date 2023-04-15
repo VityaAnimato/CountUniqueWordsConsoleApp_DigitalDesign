@@ -4,14 +4,29 @@ namespace CountUniqueWordsConsoleApp_DigitalDesign
 {
 
     internal class Program
-    {               
+    {
+        static string nameInputFile;
+        static string pathInput;
+        static string pathOutput;
         static void Main(string[] args)
         {         
             Console.WriteLine("Загрузите свой текстовый файл в папку MyDocuments и введите имя файла, например => VoinaIMir.txt");
-            string nameInputFile = Console.ReadLine();
-            string pathInput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameInputFile);
-            string pathOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Result.txt");
 
+            while (true)
+            {
+                nameInputFile = Console.ReadLine();
+                pathInput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), nameInputFile);
+
+                if (File.Exists(pathInput))
+                    break;
+
+                Console.WriteLine
+                    ("Ошибка! Убедитесь, что вы:\n" +
+                    "1. Загрузили именно текстовый файл\n" +
+                    "2. Загрузили текстовый файл в директорию MyDocumnents\n" +
+                    "3. Правильно ввели название файла с расширением!");
+            }
+          
             string contents;
             using (StreamReader reader = new StreamReader(pathInput))
             {
@@ -19,9 +34,8 @@ namespace CountUniqueWordsConsoleApp_DigitalDesign
             }
 
             var uniqueWordsAndThisCount = GetUniqueWordsAndThisCount(contents);
-
-            uniqueWordsAndThisCount.Remove("");
-
+            
+            pathOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Result.txt");
             using (StreamWriter writer = new StreamWriter(pathOutput))
             {
                 foreach (var item in uniqueWordsAndThisCount)
@@ -30,7 +44,9 @@ namespace CountUniqueWordsConsoleApp_DigitalDesign
                 }
             }
 
-            Console.WriteLine("Результат в файле Result.txt");
+            Console.WriteLine
+                ("Результат в файле Result.txt" +
+                "\n Спасибо!");
         }
 
         static Dictionary<string, int> GetUniqueWordsAndThisCount(string inputString)
@@ -56,6 +72,8 @@ namespace CountUniqueWordsConsoleApp_DigitalDesign
             }
 
             var orderedUniqueWordsAndThisCount = uniqueWordsAndThisCount.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+
+            orderedUniqueWordsAndThisCount.Remove("");
 
             return orderedUniqueWordsAndThisCount;
         }
